@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://pagination.js.org/dist/2.1.4/pagination.css">
+</head>
+<body>
+	<h1>helo word</h1>
+
+	<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Age</th>
+            </tr>
+        </tfoot>
+
+    </table>
+
+    <div id="data-container"></div>
+<div id="pagination-container"></div>
+    
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://pagination.js.org/dist/2.1.4/pagination.js"></script>
+    <script>
+
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        $(document).ready(function() {
+            var limit = 10;
+            var offset = 0;
+            var table = $('#example').DataTable( {
+                "ajax": {
+                    "url": `http://127.0.0.1:3000/about?limit=${limit}&offset=${offset}`,
+                },
+                "columns": [
+                    { "data": "id_barang" },
+                    { "data": "nama_barang" },
+                    { "data": "harga_jual" },
+                    { "data": "harga_beli" },
+                ],
+                "paging" : false
+            } );
+
+            setInterval( function () {
+                table.ajax.reload();
+                console.log('reaload')
+            }, 1000 );
+            
+            $('#pagination-container').pagination({
+                dataSource: function(done){
+                    var result = [];
+                    for (var i = 1; i < 196; i++) {
+                        result.push(i);
+                    }
+                    done(result);
+                },
+                showGoInput: true,
+                showGoButton: true,
+                callback: function(data, pagination) {
+                    console.log();
+                    var limit = 10;
+                    var offset = pagination.pageNumber * limit;
+                    table.ajax.url(`http://127.0.0.1:3000/about?limit=${limit}&offset=${offset}` ).load();
+                }
+                
+            })
+
+            function simpleTemplating(data) {
+                var html = '<ul>';
+                $.each(data, function(index, item){
+                    html += '<li>'+ item +'</li>';
+                });
+                html += '</ul>';
+                return html;
+            }
+        } );
+
+	</script>
+</body>
+</html>
